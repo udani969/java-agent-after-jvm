@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<instrumentationAgent >
+    <agentConnection>
+        <!-- Can use any persisted stream with four string payload attribute [scenario,class,method,duration] -->
+        <streamName>test.stream.1</streamName>
+        <tableName>TEST_STREAM_1</tableName>
+        <version>1.0.0</version>
+        <thriftPort>7611</thriftPort>
+        <binaryPort>9611</binaryPort>
+        <username>admin</username>
+        <password>admin</password>
+        <hostName>localhost</hostName>
+        <servicePort>9443</servicePort>
+    </agentConnection>
+
+<!--Need to add unique names for parameterName's key attribute, -->
+    <!--because that would be used as the column name of persisting table-->
+
+    <scenarios>
+        <scenario name="jdbc-monitoring-1">
+            <instrumentingClass name="com.mysql.jdbc.PreparedStatement">
+                <instrumentingMethod name="executeQuery" signature="()Ljava/sql/ResultSet;">
+                    <insertBeforeContent></insertBeforeContent>
+                    <insertAfterContent></insertAfterContent>
+                </instrumentingMethod>
+                <instrumentingMethod name="executeUpdate" signature="()I">
+                    <insertBeforeContent></insertBeforeContent>
+                    <insertAfterContent></insertAfterContent>
+                </instrumentingMethod>
+            </instrumentingClass>
+            <instrumentingClass name="com.mysql.jdbc.StatementImpl">
+                <instrumentingMethod name="executeQuery" signature="(Ljava/lang/String;)Ljava/sql/ResultSet;">
+                </instrumentingMethod>
+            </instrumentingClass>
+        </scenario>
+        <scenario name="jdbc-monitoring-2">
+            <instrumentingClass name="com.mysql.jdbc.ConnectionImpl">
+                <instrumentingMethod name="prepareStatement" signature="(Ljava/lang/String;)Ljava/sql/PreparedStatement;">
+                    <insertBeforeContent>System.out.println("######");</insertBeforeContent>
+                    <insertAts>
+                        <insertAt lineNo="1">
+                            <parameterName key="query_9">"hiii"</parameterName>
+                        </insertAt>
+                        <insertAt lineNo="3">
+                            <parameterName key="query_10">$1</parameterName>
+                        </insertAt>
+                    </insertAts>
+                    <insertAfterContent></insertAfterContent>
+                </instrumentingMethod>
+            </instrumentingClass>
+        </scenario>
+    </scenarios>
+</instrumentationAgent>
+
